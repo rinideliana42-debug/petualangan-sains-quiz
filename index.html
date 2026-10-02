@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<title>Petualangan Sains – Kuis Projek IPAS Kelas X SMK</title>
+<style>
+:root{--primary:#126e63;--secondary:#1b9aaa;--accent:#f2b134;--bg:#eef7f5;--card:#fff;--text:#17332f;--muted:#667773;--danger:#c94c4c;--success:#16835d}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--text);background:linear-gradient(135deg,#eaf8f5,#edf5fb);min-height:100vh}
+.app{max-width:980px;margin:auto;padding:24px}.screen{display:none}.screen.active{display:block}
+.card{background:rgba(255,255,255,.96);border-radius:24px;padding:30px;box-shadow:0 14px 40px rgba(18,70,65,.12)}
+.hero{text-align:center;padding:48px 28px}.earth{font-size:68px;margin-bottom:8px}.hero h1{font-size:clamp(28px,5vw,48px);margin:8px 0;color:var(--primary)}.hero p{font-size:17px;color:var(--muted);max-width:700px;margin:12px auto 28px;line-height:1.6}
+input{width:100%;max-width:520px;padding:15px 18px;border:2px solid #d8e8e5;border-radius:14px;font-size:16px;outline:none}input:focus{border-color:var(--secondary)}
+.btn{border:0;border-radius:13px;padding:13px 21px;font-size:16px;font-weight:700;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-1px)}.primary{background:var(--primary);color:#fff}.secondary{background:#e4f2f0;color:var(--primary)}.gold{background:var(--accent);color:#26351f}.danger{background:#f8e3e3;color:#9b3737}
+.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:14px}.badge{background:#e1f2ef;color:var(--primary);padding:8px 12px;border-radius:999px;font-weight:700;font-size:14px}
+.progress{height:10px;background:#dceae8;border-radius:99px;overflow:hidden;margin:10px 0 25px}.bar{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));width:0;transition:.35s}
+.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:14px;margin-bottom:18px}.question{font-size:22px;line-height:1.5;margin:0 0 22px}.option{display:block;width:100%;text-align:left;padding:15px 17px;margin:11px 0;border:2px solid #dce8e6;background:#fff;border-radius:14px;cursor:pointer;font-size:16px;color:var(--text)}.option:hover{border-color:var(--secondary);background:#f4fbfa}.option.selected{border-color:var(--secondary);background:#e9f7f5}.option.correct{border-color:var(--success);background:#e7f7ef}.option.wrong{border-color:var(--danger);background:#fceded}.option:disabled{cursor:default}
+.feedback{margin-top:20px;padding:18px;border-radius:16px;line-height:1.55}.feedback.correct{background:#e9f8f0;border-left:5px solid var(--success)}.feedback.wrong{background:#fff0f0;border-left:5px solid var(--danger)}.explain{margin-top:8px;color:#3f514d}
+.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;flex-wrap:wrap}.scorebox{text-align:center}.score{font-size:64px;font-weight:800;color:var(--primary);margin:5px}.category{display:inline-block;padding:9px 16px;border-radius:999px;background:#e5f3f0;color:var(--primary);font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:22px 0}.stat{padding:18px;border-radius:16px;background:#f5faf9;text-align:center}.stat strong{display:block;font-size:28px;color:var(--primary)}
+.review{background:#f7fbfa;padding:18px;border-radius:16px;margin-top:20px}.review h3{margin-top:0}.topic{display:flex;justify-content:space-between;border-bottom:1px solid #dfeae8;padding:10px 0}.small{font-size:14px;color:var(--muted);line-height:1.6}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:20}.piece{position:absolute;width:8px;height:14px;animation:fall 900ms ease-out forwards}@keyframes fall{to{transform:translateY(100vh) rotate(720deg);opacity:0}}
+@media(max-width:600px){.app{padding:12px}.card{padding:20px;border-radius:18px}.hero{padding:32px 18px}.question{font-size:19px}.top{align-items:flex-start}.meta{font-size:13px}}
+</style>
+</head>
+<body>
+<div class="app">
+<section id="start" class="screen active">
+<div class="card hero">
+<div class="earth">🌍</div>
+<h1>PETUALANGAN SAINS</h1>
+<h2>KUIS PROJEK IPAS KELAS X SMK</h2>
+<p>Jelajahi makhluk hidup, ekosistem, litosfer, hidrosfer, atmosfer, cuaca, iklim, dan perubahan lingkungan melalui 20 tantangan sains.</p>
+<input id="name" type="text" placeholder="Masukkan nama peserta didik" maxlength="60">
+<div style="margin-top:18px"><button class="btn primary" onclick="startQuiz()">MULAI KUIS</button></div>
+<p class="small">20 soal • Pilihan A–E • 5 poin untuk setiap jawaban benar</p>
+</div>
+</section>
+
+<section id="quiz" class="screen">
+<div class="card">
+<div class="top"><span class="badge" id="playerBadge">Peserta</span><span class="badge" id="scoreNow">Skor: 0</span></div>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<div class="meta"><span id="counter">Soal 1 dari 20</span><span id="difficulty"></span></div>
+<h2 class="question" id="question"></h2>
+<div id="options"></div>
+<div id="feedback"></div>
+<div class="actions"><button id="nextBtn" class="btn primary" style="display:none" onclick="nextQuestion()">SOAL BERIKUTNYA →</button></div>
+</div>
+</section>
+
+<section id="result" class="screen">
+<div class="card">
+<div class="scorebox"><div class="earth">🏆</div><h1>HASIL PETUALANGAN SAINS</h1><div class="score" id="finalScore">0</div><div class="category" id="category">-</div><p id="motivation"></p></div>
+<div class="grid">
+<div class="stat"><strong id="correctCount">0</strong>Benar</div>
+<div class="stat"><strong id="wrongCount">0</strong>Salah</div>
+<div class="stat"><strong id="percent">0%</strong>Keberhasilan</div>
+<div class="stat"><strong id="studentName">-</strong>Peserta</div>
+</div>
+<div class="review">
+<h3>📚 Tiga topik yang paling perlu dipelajari kembali</h3>
+<div id="weakTopics"></div>
+</div>
+<div class="review">
+<h3>💡 Rekomendasi belajar</h3>
+<p id="recommendation" class="small"></p>
+</div>
+<div class="actions">
+<button class="btn secondary" onclick="restartSame()">🔄 ULANGI KUIS</button>
+<button class="btn primary" onclick="goStart()">🏠 MULAI DARI AWAL</button>
+</div>
+</div>
+</section>
+</div>
+<div id="confetti" class="confetti"></div>
+
+<script>
+const questions=[
+{topic:"Makhluk hidup & lingkungan",diff:"Mudah",q:"Di halaman sekolah, tanaman membutuhkan air, cahaya matahari, udara, dan unsur hara dari tanah. Hubungan ini menunjukkan bahwa ...",o:["makhluk hidup tidak dipengaruhi lingkungan","makhluk hidup dan lingkungan saling berkaitan","tanah merupakan satu-satunya kebutuhan tanaman","cahaya matahari adalah faktor biotik","semua faktor lingkungan bersifat biotik"],a:1,e:"Makhluk hidup berinteraksi dengan faktor lingkungan. Air, cahaya, udara, dan tanah merupakan faktor abiotik yang mendukung kehidupan tanaman."},
+{topic:"Tingkat organisasi kehidupan",diff:"Mudah",q:"Di sebuah kolam terdapat ikan nila, ikan mujair, dan ikan mas. Kumpulan ikan nila yang hidup di kolam tersebut disebut ...",o:["individu","populasi","komunitas","ekosistem","biosfer"],a:1,e:"Populasi adalah kumpulan individu dari satu spesies yang hidup di tempat dan waktu tertentu."},
+{topic:"Interaksi antarmakhluk hidup",diff:"Mudah",q:"Ikan badut memperoleh perlindungan dari anemon, sedangkan anemon mendapat sisa makanan ikan badut. Interaksi tersebut termasuk ...",o:["predasi","kompetisi","mutualisme","parasitisme","komensalisme"],a:2,e:"Mutualisme adalah hubungan dua organisme yang sama-sama memperoleh manfaat."},
+{topic:"Rantai makanan",diff:"Mudah",q:"Pada rantai makanan rumput → belalang → katak → ular, jika jumlah belalang turun drastis, dampak yang paling mungkin terjadi adalah ...",o:["jumlah rumput meningkat","jumlah rumput menurun","jumlah katak pasti meningkat","jumlah ular meningkat","semua organisme tetap sama"],a:0,e:"Belalang memakan rumput. Jika belalang berkurang, tekanan pemakanan terhadap rumput menurun sehingga rumput cenderung meningkat."},
+{topic:"Keseimbangan ekosistem",diff:"Mudah",q:"Di suatu kebun, penggunaan pestisida berlebihan menyebabkan banyak serangga mati. Salah satu dampak ekologis yang mungkin terjadi adalah ...",o:["jaring-jaring makanan menjadi lebih stabil","semua tumbuhan langsung mati","organisme pemakan serangga kekurangan makanan","tanah berubah menjadi batuan","curah hujan meningkat"],a:2,e:"Serangga merupakan bagian dari rantai dan jaring-jaring makanan. Penurunannya dapat mengurangi sumber makanan bagi organisme pemakannya."},
+{topic:"Perubahan lingkungan",diff:"Sedang",q:"Sungai di sekitar permukiman berubah keruh dan berbau setelah banyak limbah rumah tangga dibuang tanpa pengolahan. Tindakan yang paling tepat adalah ...",o:["menambah sampah agar sungai cepat penuh","mengolah limbah sebelum dibuang","menutup seluruh aliran sungai","menambah deterjen ke sungai","membiarkan sungai membersihkan diri"],a:1,e:"Pengolahan limbah sebelum dibuang mengurangi bahan pencemar yang masuk ke ekosistem perairan."},
+{topic:"Keanekaragaman hayati",diff:"Sedang",q:"Sekolah memiliki berbagai jenis tanaman: mangga, jambu, kelapa, dan ketapang. Kondisi tersebut terutama menunjukkan keanekaragaman pada tingkat ...",o:["gen","spesies","ekosistem","biosfer","abiotik"],a:1,e:"Keanekaragaman spesies terlihat dari adanya berbagai jenis organisme yang berbeda."},
+{topic:"Litosfer",diff:"Sedang",q:"Setelah hujan deras, tanah di lereng tanpa vegetasi mudah longsor. Penjelasan yang paling tepat adalah ...",o:["akar tanaman membantu mengikat tanah","tanaman selalu meningkatkan erosi","air hujan tidak berpengaruh pada tanah","batuan tidak pernah mengalami pelapukan","lereng tanpa vegetasi selalu lebih kuat"],a:0,e:"Akar tanaman membantu mengikat partikel tanah dan vegetasi mengurangi energi aliran air, sehingga risiko erosi dan longsor dapat berkurang."},
+{topic:"Hidrosfer",diff:"Sedang",q:"Perhatikan proses berikut: air laut menguap → uap air berkondensasi → turun sebagai hujan. Proses tersebut merupakan bagian dari ...",o:["siklus batuan","siklus hidrologi","siklus karbon","siklus nitrogen","siklus energi"],a:1,e:"Siklus hidrologi adalah peredaran air dari permukaan bumi ke atmosfer dan kembali lagi ke permukaan bumi."},
+{topic:"Atmosfer",diff:"Sedang",q:"Lapisan atmosfer tempat sebagian besar fenomena cuaca seperti awan, hujan, dan angin terjadi adalah ...",o:["troposfer","stratosfer","mesosfer","termosfer","eksosfer"],a:0,e:"Troposfer merupakan lapisan atmosfer paling bawah dan menjadi tempat berlangsungnya sebagian besar fenomena cuaca."},
+{topic:"Cuaca, iklim & musim",diff:"Sedang",q:"Pagi ini langit mendung dan hujan turun deras selama dua jam. Pernyataan tersebut paling tepat menggambarkan ...",o:["iklim","cuaca","musim","geologi","biosfer"],a:1,e:"Cuaca menggambarkan kondisi atmosfer pada tempat dan waktu tertentu. Iklim menggambarkan pola cuaca dalam jangka panjang."},
+{topic:"Aktivitas manusia & lingkungan",diff:"Sedang",q:"Sebuah kawasan mengalami suhu lebih tinggi karena banyak lahan terbuka berubah menjadi permukaan beton dan minim pepohonan. Upaya yang paling relevan adalah ...",o:["menambah permukaan beton","mengurangi ruang terbuka hijau","menanam dan memelihara vegetasi","membakar sampah","mengurangi penyerapan air tanah"],a:2,e:"Vegetasi membantu memberi naungan, melakukan evapotranspirasi, dan mendukung lingkungan yang lebih sejuk."},
+{topic:"Hidrosfer",diff:"Sedang",q:"Data kualitas air sebuah sungai: lokasi A dekat sumber mata air memiliki air jernih dan bau rendah; lokasi B dekat permukiman memiliki air keruh dan bau tinggi. Kesimpulan yang paling masuk akal adalah ...",o:["kualitas air B cenderung lebih rendah","air A pasti tidak mengandung organisme","lokasi tidak memengaruhi kualitas air","kekeruhan selalu menunjukkan air aman","bau tidak dapat digunakan sebagai indikator awal"],a:0,e:"Perbedaan kekeruhan dan bau merupakan indikator awal adanya perubahan kualitas air. Penilaian lengkap tetap memerlukan parameter fisik, kimia, dan/atau biologis."},
+{topic:"Keseimbangan ekosistem",diff:"Sedang",q:"Dalam sebuah ekosistem, jumlah predator menurun tajam. Jika predator sebelumnya memangsa herbivor, prediksi yang paling mungkin adalah ...",o:["herbivor meningkat dan tekanan pada tumbuhan bertambah","herbivor langsung punah","tumbuhan pasti meningkat tanpa batas","predator lain pasti punah","tidak ada perubahan pada ekosistem"],a:0,e:"Berkurangnya predator dapat menurunkan tekanan predasi sehingga populasi herbivor cenderung meningkat dan konsumsi tumbuhan dapat bertambah."},
+{topic:"Perubahan lingkungan",diff:"Sedang",q:"Data pengamatan suhu di sekitar sekolah: 07.00 = 24°C, 10.00 = 28°C, 13.00 = 32°C, 16.00 = 29°C. Pernyataan yang paling tepat adalah ...",o:["suhu tertinggi terjadi pukul 07.00","suhu terus turun sepanjang hari","suhu meningkat hingga 13.00 lalu menurun","suhu tidak berubah","data menunjukkan perubahan iklim global"],a:2,e:"Data hanya menunjukkan pola suhu harian pada lokasi dan waktu pengamatan tersebut: meningkat hingga 13.00 lalu menurun."},
+{topic:"Litosfer & mitigasi",diff:"HOTS",q:"Desa berada di lereng bukit. Setelah beberapa pohon ditebang, muncul alur-alur erosi di tanah. Warga ingin mengurangi risiko erosi. Kombinasi tindakan yang paling tepat adalah ...",o:["menebang pohon lain dan membuat lahan terbuka","menanam kembali vegetasi dan membuat pengelolaan aliran air yang baik","menutup seluruh tanah dengan plastik","membuat saluran air tanpa memperhatikan kemiringan","meningkatkan pembakaran semak"],a:1,e:"Revegetasi membantu memperkuat tanah, sedangkan pengelolaan aliran air mengurangi konsentrasi dan kecepatan aliran yang dapat memicu erosi."},
+{topic:"Perubahan lingkungan & data",diff:"HOTS",q:"Dua area sekolah diamati selama satu minggu. Area A memiliki banyak pohon dan suhu rata-rata 28°C. Area B minim pohon dan suhu rata-rata 31°C. Kesimpulan yang paling hati-hati adalah ...",o:["pohon pasti satu-satunya penyebab perbedaan suhu","area dengan lebih banyak pohon menunjukkan suhu rata-rata lebih rendah","data membuktikan perubahan iklim global","suhu tidak dipengaruhi kondisi permukaan","area A pasti memiliki curah hujan lebih tinggi"],a:1,e:"Data menunjukkan adanya hubungan antara kondisi vegetasi dan suhu pada dua area. Namun, faktor lain seperti bahan permukaan, angin, dan waktu pengukuran juga perlu dipertimbangkan."},
+{topic:"Jaring-jaring makanan",diff:"HOTS",q:"Dalam jaring-jaring makanan sawah, ular memangsa tikus dan katak. Jika ular berkurang akibat gangguan habitat, prediksi yang paling logis adalah ...",o:["tikus dan katak berpotensi meningkat sehingga organisme yang mereka makan dapat lebih banyak tertekan","semua organisme langsung meningkat","padi pasti meningkat","tikus langsung punah","tidak mungkin terjadi perubahan"],a:0,e:"Satu predator dapat mengendalikan lebih dari satu mangsa. Jika predator berkurang, populasi mangsa berpotensi meningkat dan memengaruhi tingkat trofik lain."},
+{topic:"Hidrosfer & pemecahan masalah",diff:"HOTS",q:"Sekolah sering mengalami genangan setelah hujan deras. Halaman banyak tertutup beton, sementara saluran air tersumbat sampah. Tindakan yang paling logis sebagai langkah awal adalah ...",o:["menambah beton agar air tidak masuk tanah","membersihkan saluran dan menambah area resapan/vegetasi","membuang sampah ke saluran yang lebih besar","menutup semua saluran air","mengurangi jumlah tanaman"],a:1,e:"Membersihkan saluran membantu memperlancar aliran, sedangkan area resapan membantu air masuk ke tanah. Keduanya menangani dua faktor yang terlihat pada kasus."},
+{topic:"Cuaca, iklim & aktivitas manusia",diff:"HOTS",q:"Seorang siswa berkata, 'Hari ini sangat panas, berarti perubahan iklim pasti terjadi.' Tanggapan ilmiah yang paling tepat adalah ...",o:["benar, satu hari cukup membuktikan perubahan iklim","salah, karena suhu tidak pernah berubah","kesimpulan belum cukup karena perubahan iklim dikaji dari pola data jangka panjang","benar, karena cuaca dan iklim sama","salah, karena aktivitas manusia tidak berpengaruh pada lingkungan"],a:2,e:"Cuaca adalah kondisi jangka pendek, sedangkan perubahan iklim memerlukan analisis pola jangka panjang dan data yang memadai."}
+];
+
+let state={name:"",i:0,score:0,answers:[],topics:{}};
+
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function startQuiz(){
+ const n=document.getElementById('name').value.trim();
+ if(!n){alert("Silakan masukkan nama peserta didik terlebih dahulu.");return}
+ state={name:n,i:0,score:0,answers:[],topics:{}};
+ questions.forEach(q=>state.topics[q.topic]={wrong:0,total:0});
+ show('quiz'); renderQuestion();
+}
+function renderQuestion(){
+ const q=questions[state.i];
+ document.getElementById('playerBadge').textContent=state.name;
+ document.getElementById('scoreNow').textContent=`Skor: ${state.score}`;
+ document.getElementById('counter').textContent=`Soal ${state.i+1} dari ${questions.length}`;
+ document.getElementById('difficulty').textContent=q.diff;
+ document.getElementById('bar').style.width=((state.i)/questions.length*100)+"%";
+ document.getElementById('question').textContent=q.q;
+ const wrap=document.getElementById('options');wrap.innerHTML='';
+ q.o.forEach((opt,j)=>{
+   const b=document.createElement('button');b.className='option';b.innerHTML=`<b>${String.fromCharCode(65+j)}.</b> ${opt}`;
+   b.onclick=()=>answer(j);wrap.appendChild(b);
+ });
+ document.getElementById('feedback').innerHTML='';
+ document.getElementById('nextBtn').style.display='none';
+}
+function answer(choice){
+ const q=questions[state.i]; const buttons=[...document.querySelectorAll('.option')];
+ buttons.forEach(b=>b.disabled=true);
+ buttons[choice].classList.add('selected');
+ state.topics[q.topic].total++;
+ if(choice===q.a){
+   state.score+=5; buttons[choice].classList.add('correct'); feedback(true,q);
+   confetti();
+ }else{
+   buttons[choice].classList.add('wrong');buttons[q.a].classList.add('correct');
+   state.topics[q.topic].wrong++; feedback(false,q);
+ }
+ state.answers[state.i]=choice;
+ document.getElementById('scoreNow').textContent=`Skor: ${state.score}`;
+ document.getElementById('bar').style.width=((state.i+1)/questions.length*100)+"%";
+ document.getElementById('nextBtn').style.display='inline-block';
+ document.getElementById('nextBtn').textContent=state.i===questions.length-1?'LIHAT HASIL →':'SOAL BERIKUTNYA →';
+}
+function feedback(ok,q){
+ const el=document.getElementById('feedback');
+ el.className='feedback '+(ok?'correct':'wrong');
+ el.innerHTML=`<strong>${ok?'✓ Hebat! Jawaban kamu benar. Kamu sudah memahami konsep ini dengan baik.':'✗ Belum tepat. Mari pahami kembali konsepnya melalui penjelasan berikut.'}</strong>
+ <div class="explain"><b>Jawaban benar:</b> ${String.fromCharCode(65+q.a)}. ${q.o[q.a]}<br><b>Penjelasan ilmiah:</b> ${q.e}</div>`;
+}
+function nextQuestion(){if(state.i<questions.length-1){state.i++;renderQuestion()}else{showResult()}}
+function showResult(){
+ const pct=state.score;
+ let cat=pct>=86?'Sangat Baik':pct>=76?'Baik':pct>=66?'Cukup':'Perlu Penguatan';
+ let msg=pct>=86?'Luar biasa! Pertahankan kemampuan menganalisis fenomena dan bukti ilmiah.':pct>=76?'Bagus! Dasar konsep sudah kuat. Perbanyak latihan pada soal berbasis data dan sebab-akibat.':pct>=66?'Kamu sudah memiliki dasar yang cukup. Tinjau kembali konsep yang paling sering keliru.':'Jangan menyerah. Gunakan ringkasan topik di bawah untuk memperkuat konsep dasar, lalu coba lagi.';
+ document.getElementById('finalScore').textContent=pct;
+ document.getElementById('category').textContent=cat;
+ document.getElementById('motivation').textContent=msg;
+ document.getElementById('correctCount').textContent=state.score/5;
+ document.getElementById('wrongCount').textContent=20-state.score/5;
+ document.getElementById('percent').textContent=pct+"%";
+ document.getElementById('studentName').textContent=state.name;
+ const weak=Object.entries(state.topics).sort((a,b)=>b[1].wrong-a[1].wrong).slice(0,3);
+ document.getElementById('weakTopics').innerHTML=weak.map(([t,v],i)=>`<div class="topic"><span>${i+1}. ${t}</span><b>${v.wrong} salah</b></div>`).join('');
+ const names=weak.filter(x=>x[1].wrong>0).map(x=>x[0]);
+ document.getElementById('recommendation').textContent=names.length?`Pelajari kembali ${names.join(', ')}. Fokus pada hubungan sebab-akibat, membaca data sederhana, dan penerapan konsep pada fenomena lingkungan sekitar. Setelah itu, ulangi kuis untuk melihat perkembangan pemahamanmu.`:'Tidak ada topik yang memiliki jawaban salah. Tetap tinjau pembahasan setiap soal agar pemahaman ilmiah semakin kuat.';
+ show('result');
+}
+function restartSame(){state.i=0;state.score=0;state.answers=[];Object.keys(state.topics).forEach(k=>state.topics[k]={wrong:0,total:0});show('quiz');renderQuestion()}
+function goStart(){document.getElementById('name').value='';show('start')}
+function confetti(){
+ const c=document.getElementById('confetti');c.innerHTML='';
+ for(let i=0;i<22;i++){let p=document.createElement('i');p.className='piece';p.style.left=Math.random()*100+'%';p.style.top='-20px';p.style.background=['#126e63','#1b9aaa','#f2b134','#7d9f8e'][i%4];p.style.animationDelay=Math.random()*180+'ms';c.appendChild(p)}
+ setTimeout(()=>c.innerHTML='',1100);
+}
+</script>
+</body>
+</html>
