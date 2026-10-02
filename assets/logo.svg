@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Petualangan Sains logo">
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#126e63"/>
+      <stop offset="100%" stop-color="#1b9aaa"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f2b134"/>
+      <stop offset="100%" stop-color="#ffd86b"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="30" fill="url(#g1)"/>
+  <circle cx="64" cy="64" r="32" fill="#d9f6f0" opacity="0.12"/>
+  <circle cx="64" cy="64" r="30" fill="#dff8f4" opacity="0.15"/>
+  <path d="M39 75c15-22 33-33 50-38 5 12 2 26-9 38-13 13-31 18-41 15Z" fill="url(#g2)"/>
+  <path d="M62 42c18 3 29 17 31 34-16-7-29-9-41-1-4 3-10 8-17 14 2-17 12-31 27-47Z" fill="#dff8f4" opacity="0.9"/>
+  <path d="M53 86c4-15 16-27 31-30" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <circle cx="92" cy="40" r="5" fill="#fff" opacity="0.85"/>
+  <circle cx="78" cy="31" r="4" fill="#fff" opacity="0.7"/>
+</svg>
